@@ -68,6 +68,43 @@ function PainelPage() {
     (item) => new Date(item.due_at).getTime() < Date.now(),
   );
 
+  const demandsQuery = useDemands();
+  const { data: team = [] } = useTeam();
+  const demands = demandsQuery.data ?? [];
+
+  const demandStats = useMemo(
+    () => ({
+      total: demands.length,
+      pendentes: demands.filter((d) => d.status === "a_fazer").length,
+      andamento: demands.filter((d) => d.status === "em_andamento").length,
+      concluidas: demands.filter((d) => d.status === "concluida").length,
+      atrasadas: demands.filter(isOverdue).length,
+    }),
+    [demands],
+  );
+
+  const byMember = useMemo(
+    () =>
+      team
+        .filter((member) => member.is_active)
+        .map((member) => {
+          const rows = demands.filter((demand) => demand.assigned_to === member.id);
+          return {
+            id: member.id,
+            name: member.full_name || member.email,
+            pendentes: rows.filter((d) => d.status === "a_fazer").length,
+            andamento: rows.filter((d) => d.status === "em_andamento").length,
+            concluidas: rows.filter((d) => d.status === "concluida").length,
+            atrasadas: rows.filter(isOverdue).length,
+            total: rows.length,
+          };
+        })
+        .filter((row) => row.total > 0 || isGestor),
+    [team, demands, isGestor],
+  );
+
+
+
   return (
     <>
       <PageHeader
