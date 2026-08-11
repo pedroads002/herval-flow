@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/intervencoes")({
 
 function InterventionsPage() {
   const { isGestor } = useAuth();
-  const [status, setStatus] = useState("aberta");
+  const [status, setStatus] = useState("pendente");
   const [clinicId, setClinicId] = useState("todos");
   const [reason, setReason] = useState("todos");
   const [notesById, setNotesById] = useState<Record<string, string>>({});
@@ -46,7 +46,7 @@ function InterventionsPage() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <StatCard label="Nesta visão" value={rows.length} />
-        <StatCard label="Abertas" value={rows.filter((r) => r.status === "aberta").length} tone="danger" />
+        <StatCard label="Abertas" value={rows.filter((r) => r.status === "pendente").length} tone="danger" />
         <StatCard
           label="Em andamento"
           value={rows.filter((r) => r.status === "em_andamento").length}
@@ -136,7 +136,7 @@ function InterventionsPage() {
                   <StatusBadge
                     label={INTERVENTION_STATUS_LABEL[item.status]}
                     tone={
-                      item.status === "aberta"
+                      item.status === "pendente"
                         ? "border-destructive/40 text-destructive"
                         : item.status === "em_andamento"
                           ? "border-warning/40 text-warning"
@@ -156,7 +156,7 @@ function InterventionsPage() {
                     onChange={(e) => setNotesById((s) => ({ ...s, [item.id]: e.target.value }))}
                   />
                   <div className="flex flex-wrap gap-2">
-                    {item.status === "aberta" ? (
+                    {item.status === "pendente" ? (
                       <Button
                         size="sm"
                         variant="outline"

@@ -46,7 +46,7 @@ function PainelPage() {
   const leadsQuery = useLeads({ from: period.from, to: period.to });
   const agendaQuery = useAppointments({ from: today.from, to: today.to });
   const followUpsQuery = useFollowUps({ status: "pendente" });
-  const interventionsQuery = useInterventions({ status: "aberta" });
+  const interventionsQuery = useInterventions({ status: "pendente" });
 
   const leads = leadsQuery.data ?? [];
   const counts = useMemo(() => {
