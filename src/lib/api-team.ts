@@ -10,8 +10,8 @@ export type NewMemberInput = {
   full_name: string;
   email: string;
   password: string;
-  phone?: string;
-  avatar_url?: string;
+  phone?: string | undefined;
+  avatar_url?: string | undefined;
   role: AppRole;
 };
 
