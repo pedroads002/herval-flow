@@ -45,7 +45,7 @@ function EquipePage() {
               </div>
               {isGestor && member.id !== user?.id ? (
                 <Select
-                  value={member.role ?? undefined}
+                  value={member.role ?? ""}
                   onValueChange={(value) => setRole.mutate({ userId: member.id, role: value as AppRole })}
                 >
                   <SelectTrigger className="w-40 shrink-0" aria-label={`Papel de ${member.full_name}`}>
