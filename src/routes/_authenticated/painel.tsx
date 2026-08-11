@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, Siren, RotateCcw, TrendingUp } from "lucide-react";
+import { CalendarDays, Siren, RotateCcw, TrendingUp, ClipboardList } from "lucide-react";
 import { PageHeader, StatCard, SectionCard, StatusBadge } from "@/components/Primitives";
 import { EmptyState, ErrorState, LoadingState } from "@/components/States";
-import { useAppointments, useFollowUps, useInterventions, useLeads } from "@/lib/api";
+import { useAppointments, useFollowUps, useInterventions, useLeads, useTeam } from "@/lib/api";
+import { useDemands } from "@/lib/api-demands";
+import { isOverdue } from "@/lib/demands";
 import { useAuth } from "@/hooks/useAuth";
 import {
   APPOINTMENT_STATUS_LABEL,
@@ -15,6 +17,7 @@ import {
 import { addDays, endOfDay, formatDateTime, formatPercent, relativeDay, startOfDay } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 export const Route = createFileRoute("/_authenticated/painel")({
   head: () => ({
