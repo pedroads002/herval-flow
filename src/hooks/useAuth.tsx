@@ -1,5 +1,7 @@
 import { useEffect, useState, createContext, useContext, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
+import { toast } from "sonner";
+
 import { supabase } from "@/integrations/supabase/client";
 import type { AppRole } from "@/lib/domain";
 
