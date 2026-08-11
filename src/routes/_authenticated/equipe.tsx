@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { UserCog, Plus } from "lucide-react";
 import { PageHeader } from "@/components/Primitives";
-import { EmptyState, ErrorState, LoadingState } from "@/components/States";
+import { EmptyState, ErrorState, GestorOnly, LoadingState } from "@/components/States";
 import { useTeam, type TeamMember } from "@/lib/api";
 import { useCreateTeamMember, useResetMemberPassword, useUpdateTeamMember } from "@/lib/api-team";
 import { ROLE_LABEL, type AppRole } from "@/lib/domain";
@@ -28,7 +28,11 @@ export const Route = createFileRoute("/_authenticated/equipe")({
       { name: "description", content: "Gestão de acessos e papéis da operação comercial." },
     ],
   }),
-  component: EquipePage,
+  component: () => (
+    <GestorOnly>
+      <EquipePage />
+    </GestorOnly>
+  ),
 });
 
 type MemberForm = {

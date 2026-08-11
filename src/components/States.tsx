@@ -1,5 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
+import { ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 export function EmptyState({
   icon: Icon,
@@ -57,4 +59,19 @@ export function ErrorState({ message = "Não foi possível carregar os dados.", 
       ) : null}
     </div>
   );
+}
+
+export function GestorOnly({ children }: { children: ReactNode }) {
+  const { isGestor, loading } = useAuth();
+  if (loading) return <LoadingState label="Verificando permissões..." />;
+  if (!isGestor) {
+    return (
+      <EmptyState
+        icon={ShieldAlert}
+        title="Área restrita ao gestor"
+        description="Você não tem permissão para acessar esta área. Fale com o gestor comercial."
+      />
+    );
+  }
+  return <>{children}</>;
 }
