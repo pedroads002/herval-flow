@@ -40,6 +40,8 @@ type NavItem = { to: string; label: string; icon: typeof Users; gestorOnly?: boo
 
 const NAV: NavItem[] = [
   { to: "/painel", label: "Painel", icon: LayoutDashboard },
+  { to: "/meu-dia", label: "Meu Dia", icon: Sun },
+  { to: "/demandas", label: "Demandas", icon: ClipboardList },
   { to: "/leads", label: "Leads", icon: Users },
   { to: "/clinicas", label: "Clínicas", icon: Building2 },
   { to: "/agenda", label: "Agenda", icon: CalendarDays },
@@ -50,7 +52,8 @@ const NAV: NavItem[] = [
   { to: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
-const MOBILE_NAV = ["/painel", "/leads", "/agenda", "/intervencoes"];
+const MOBILE_NAV = ["/meu-dia", "/demandas", "/leads", "/intervencoes"];
+
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();

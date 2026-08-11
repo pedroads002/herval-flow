@@ -19,6 +19,7 @@ import { Route as AuthenticatedDemandasRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedEquipeRouteImport } from './routes/_authenticated/equipe'
 import { Route as AuthenticatedFollowUpsRouteImport } from './routes/_authenticated/follow-ups'
 import { Route as AuthenticatedIntervencoesRouteImport } from './routes/_authenticated/intervencoes'
+import { Route as AuthenticatedMeuDiaRouteImport } from './routes/_authenticated/meu-dia'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedLeadsIndexRouteImport } from './routes/_authenticated/leads.index'
@@ -75,6 +76,11 @@ const AuthenticatedIntervencoesRoute =
     path: '/intervencoes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMeuDiaRoute = AuthenticatedMeuDiaRouteImport.update({
+  id: '/meu-dia',
+  path: '/meu-dia',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/equipe': typeof AuthenticatedEquipeRoute
   '/follow-ups': typeof AuthenticatedFollowUpsRoute
   '/intervencoes': typeof AuthenticatedIntervencoesRoute
+  '/meu-dia': typeof AuthenticatedMeuDiaRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/equipe': typeof AuthenticatedEquipeRoute
   '/follow-ups': typeof AuthenticatedFollowUpsRoute
   '/intervencoes': typeof AuthenticatedIntervencoesRoute
+  '/meu-dia': typeof AuthenticatedMeuDiaRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/_authenticated/equipe': typeof AuthenticatedEquipeRoute
   '/_authenticated/follow-ups': typeof AuthenticatedFollowUpsRoute
   '/_authenticated/intervencoes': typeof AuthenticatedIntervencoesRoute
+  '/_authenticated/meu-dia': typeof AuthenticatedMeuDiaRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/equipe'
     | '/follow-ups'
     | '/intervencoes'
+    | '/meu-dia'
     | '/painel'
     | '/relatorios'
     | '/leads/$leadId'
@@ -171,6 +181,7 @@ export interface FileRouteTypes {
     | '/equipe'
     | '/follow-ups'
     | '/intervencoes'
+    | '/meu-dia'
     | '/painel'
     | '/relatorios'
     | '/leads/$leadId'
@@ -187,6 +198,7 @@ export interface FileRouteTypes {
     | '/_authenticated/equipe'
     | '/_authenticated/follow-ups'
     | '/_authenticated/intervencoes'
+    | '/_authenticated/meu-dia'
     | '/_authenticated/painel'
     | '/_authenticated/relatorios'
     | '/_authenticated/leads/$leadId'
@@ -271,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIntervencoesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/meu-dia': {
+      id: '/_authenticated/meu-dia'
+      path: '/meu-dia'
+      fullPath: '/meu-dia'
+      preLoaderRoute: typeof AuthenticatedMeuDiaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/painel': {
       id: '/_authenticated/painel'
       path: '/painel'
@@ -310,6 +329,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEquipeRoute: typeof AuthenticatedEquipeRoute
   AuthenticatedFollowUpsRoute: typeof AuthenticatedFollowUpsRoute
   AuthenticatedIntervencoesRoute: typeof AuthenticatedIntervencoesRoute
+  AuthenticatedMeuDiaRoute: typeof AuthenticatedMeuDiaRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedLeadsLeadIdRoute: typeof AuthenticatedLeadsLeadIdRoute
@@ -324,6 +344,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEquipeRoute: AuthenticatedEquipeRoute,
   AuthenticatedFollowUpsRoute: AuthenticatedFollowUpsRoute,
   AuthenticatedIntervencoesRoute: AuthenticatedIntervencoesRoute,
+  AuthenticatedMeuDiaRoute: AuthenticatedMeuDiaRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedLeadsLeadIdRoute: AuthenticatedLeadsLeadIdRoute,
@@ -341,3 +362,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
