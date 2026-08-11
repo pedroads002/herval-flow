@@ -132,6 +132,187 @@ export type Database = {
         }
         Relationships: []
       }
+      demand_comments: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          demand_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          demand_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          demand_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demand_comments_demand_id_fkey"
+            columns: ["demand_id"]
+            isOneToOne: false
+            referencedRelation: "demands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demand_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          demand_id: string
+          description: string | null
+          event_type: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          demand_id: string
+          description?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          demand_id?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demand_events_demand_id_fkey"
+            columns: ["demand_id"]
+            isOneToOne: false
+            referencedRelation: "demands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demand_tags: {
+        Row: {
+          created_at: string
+          demand_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          demand_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          demand_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demand_tags_demand_id_fkey"
+            columns: ["demand_id"]
+            isOneToOne: false
+            referencedRelation: "demands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demand_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demands: {
+        Row: {
+          archived_at: string | null
+          archived_by: string | null
+          assigned_to: string | null
+          clinic_id: string | null
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_at: string | null
+          id: string
+          lead_id: string | null
+          priority: Database["public"]["Enums"]["demand_priority"]
+          start_date: string | null
+          status: Database["public"]["Enums"]["demand_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
+          assigned_to?: string | null
+          clinic_id?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          lead_id?: string | null
+          priority?: Database["public"]["Enums"]["demand_priority"]
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["demand_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          archived_by?: string | null
+          assigned_to?: string | null
+          clinic_id?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          lead_id?: string | null
+          priority?: Database["public"]["Enums"]["demand_priority"]
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["demand_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demands_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demands_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follow_ups: {
         Row: {
           assigned_to: string | null
@@ -369,6 +550,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
           email: string
           full_name: string
@@ -378,6 +560,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
           email?: string
           full_name?: string
@@ -387,12 +570,43 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
           email?: string
           full_name?: string
           id?: string
           is_active?: boolean
           phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tags: {
+        Row: {
+          color: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
           updated_at?: string
         }
         Relationships: []
@@ -441,6 +655,8 @@ export type Database = {
         | "no_show"
         | "reagendado"
         | "cancelado"
+      demand_priority: "urgente" | "alta" | "media" | "baixa"
+      demand_status: "a_fazer" | "em_andamento" | "concluida" | "bloqueada"
       followup_status: "pendente" | "concluido" | "cancelado"
       intervention_reason:
         | "ligacao"
@@ -601,6 +817,8 @@ export const Constants = {
         "reagendado",
         "cancelado",
       ],
+      demand_priority: ["urgente", "alta", "media", "baixa"],
+      demand_status: ["a_fazer", "em_andamento", "concluida", "bloqueada"],
       followup_status: ["pendente", "concluido", "cancelado"],
       intervention_reason: [
         "ligacao",

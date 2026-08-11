@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, Siren, RotateCcw, TrendingUp } from "lucide-react";
+import { CalendarDays, Siren, RotateCcw, TrendingUp, ClipboardList } from "lucide-react";
 import { PageHeader, StatCard, SectionCard, StatusBadge } from "@/components/Primitives";
 import { EmptyState, ErrorState, LoadingState } from "@/components/States";
-import { useAppointments, useFollowUps, useInterventions, useLeads } from "@/lib/api";
+import { useAppointments, useFollowUps, useInterventions, useLeads, useTeam } from "@/lib/api";
+import { useDemands } from "@/lib/api-demands";
+import { isOverdue } from "@/lib/demands";
 import { useAuth } from "@/hooks/useAuth";
 import {
   APPOINTMENT_STATUS_LABEL,
@@ -15,6 +17,7 @@ import {
 import { addDays, endOfDay, formatDateTime, formatPercent, relativeDay, startOfDay } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 export const Route = createFileRoute("/_authenticated/painel")({
   head: () => ({
@@ -65,6 +68,43 @@ function PainelPage() {
     (item) => new Date(item.due_at).getTime() < Date.now(),
   );
 
+  const demandsQuery = useDemands();
+  const { data: team = [] } = useTeam();
+  const demands = demandsQuery.data ?? [];
+
+  const demandStats = useMemo(
+    () => ({
+      total: demands.length,
+      pendentes: demands.filter((d) => d.status === "a_fazer").length,
+      andamento: demands.filter((d) => d.status === "em_andamento").length,
+      concluidas: demands.filter((d) => d.status === "concluida").length,
+      atrasadas: demands.filter(isOverdue).length,
+    }),
+    [demands],
+  );
+
+  const byMember = useMemo(
+    () =>
+      team
+        .filter((member) => member.is_active)
+        .map((member) => {
+          const rows = demands.filter((demand) => demand.assigned_to === member.id);
+          return {
+            id: member.id,
+            name: member.full_name || member.email,
+            pendentes: rows.filter((d) => d.status === "a_fazer").length,
+            andamento: rows.filter((d) => d.status === "em_andamento").length,
+            concluidas: rows.filter((d) => d.status === "concluida").length,
+            atrasadas: rows.filter(isOverdue).length,
+            total: rows.length,
+          };
+        })
+        .filter((row) => row.total > 0 || isGestor),
+    [team, demands, isGestor],
+  );
+
+
+
   return (
     <>
       <PageHeader
@@ -91,6 +131,71 @@ function PainelPage() {
         <StatCard label="Comparecimento" value={formatPercent(showRate)} hint={`${attended} presenças`} />
         <StatCard label="Conversão lead→consulta" value={formatPercent(conversion)} tone="primary" />
       </div>
+
+      <SectionCard
+        title="Operação da equipe"
+        description="Demandas ativas por status"
+        actions={
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/demandas">Ver demandas</Link>
+          </Button>
+        }
+      >
+        {demandsQuery.isPending ? (
+          <LoadingState />
+        ) : demandsQuery.isError ? (
+          <ErrorState onRetry={() => void demandsQuery.refetch()} />
+        ) : demandStats.total === 0 ? (
+          <EmptyState
+            icon={ClipboardList}
+            title="Nenhuma demanda ativa"
+            description="Crie demandas para organizar a execução da equipe."
+          />
+        ) : (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+              <StatCard label="Total" value={demandStats.total} />
+              <StatCard label="Pendentes" value={demandStats.pendentes} />
+              <StatCard label="Em andamento" value={demandStats.andamento} tone="primary" />
+              <StatCard label="Concluídas" value={demandStats.concluidas} />
+              <StatCard label="Atrasadas" value={demandStats.atrasadas} tone="danger" />
+            </div>
+
+            {isGestor ? (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[520px] text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                      <th className="py-2 pr-3 font-medium">CRC</th>
+                      <th className="py-2 px-3 font-medium">Pendentes</th>
+                      <th className="py-2 px-3 font-medium">Em andamento</th>
+                      <th className="py-2 px-3 font-medium">Concluídas</th>
+                      <th className="py-2 pl-3 font-medium">Atrasadas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {byMember.map((row) => (
+                      <tr key={row.id} className="border-b border-border last:border-0">
+                        <td className="max-w-[220px] truncate py-2 pr-3 font-medium">{row.name}</td>
+                        <td className="tabular px-3 py-2">{row.pendentes}</td>
+                        <td className="tabular px-3 py-2">{row.andamento}</td>
+                        <td className="tabular px-3 py-2">{row.concluidas}</td>
+                        <td
+                          className={`tabular py-2 pl-3 font-semibold ${row.atrasadas ? "text-destructive" : ""}`}
+                        >
+                          {row.atrasadas}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : null}
+          </div>
+        )}
+      </SectionCard>
+
+
 
       <div className="grid gap-4 lg:grid-cols-2">
         <SectionCard

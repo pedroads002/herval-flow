@@ -15,9 +15,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedClinicasRouteImport } from './routes/_authenticated/clinicas'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
+import { Route as AuthenticatedDemandasRouteImport } from './routes/_authenticated/demandas'
 import { Route as AuthenticatedEquipeRouteImport } from './routes/_authenticated/equipe'
 import { Route as AuthenticatedFollowUpsRouteImport } from './routes/_authenticated/follow-ups'
 import { Route as AuthenticatedIntervencoesRouteImport } from './routes/_authenticated/intervencoes'
+import { Route as AuthenticatedMeuDiaRouteImport } from './routes/_authenticated/meu-dia'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedLeadsIndexRouteImport } from './routes/_authenticated/leads.index'
@@ -53,6 +55,11 @@ const AuthenticatedConfiguracoesRoute =
     path: '/configuracoes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDemandasRoute = AuthenticatedDemandasRouteImport.update({
+  id: '/demandas',
+  path: '/demandas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedEquipeRoute = AuthenticatedEquipeRouteImport.update({
   id: '/equipe',
   path: '/equipe',
@@ -69,6 +76,11 @@ const AuthenticatedIntervencoesRoute =
     path: '/intervencoes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMeuDiaRoute = AuthenticatedMeuDiaRouteImport.update({
+  id: '/meu-dia',
+  path: '/meu-dia',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -97,9 +109,11 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/clinicas': typeof AuthenticatedClinicasRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/demandas': typeof AuthenticatedDemandasRoute
   '/equipe': typeof AuthenticatedEquipeRoute
   '/follow-ups': typeof AuthenticatedFollowUpsRoute
   '/intervencoes': typeof AuthenticatedIntervencoesRoute
+  '/meu-dia': typeof AuthenticatedMeuDiaRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
@@ -111,9 +125,11 @@ export interface FileRoutesByTo {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/clinicas': typeof AuthenticatedClinicasRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/demandas': typeof AuthenticatedDemandasRoute
   '/equipe': typeof AuthenticatedEquipeRoute
   '/follow-ups': typeof AuthenticatedFollowUpsRoute
   '/intervencoes': typeof AuthenticatedIntervencoesRoute
+  '/meu-dia': typeof AuthenticatedMeuDiaRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
@@ -127,9 +143,11 @@ export interface FileRoutesById {
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/clinicas': typeof AuthenticatedClinicasRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/_authenticated/demandas': typeof AuthenticatedDemandasRoute
   '/_authenticated/equipe': typeof AuthenticatedEquipeRoute
   '/_authenticated/follow-ups': typeof AuthenticatedFollowUpsRoute
   '/_authenticated/intervencoes': typeof AuthenticatedIntervencoesRoute
+  '/_authenticated/meu-dia': typeof AuthenticatedMeuDiaRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
@@ -143,9 +161,11 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/clinicas'
     | '/configuracoes'
+    | '/demandas'
     | '/equipe'
     | '/follow-ups'
     | '/intervencoes'
+    | '/meu-dia'
     | '/painel'
     | '/relatorios'
     | '/leads/$leadId'
@@ -157,9 +177,11 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/clinicas'
     | '/configuracoes'
+    | '/demandas'
     | '/equipe'
     | '/follow-ups'
     | '/intervencoes'
+    | '/meu-dia'
     | '/painel'
     | '/relatorios'
     | '/leads/$leadId'
@@ -172,9 +194,11 @@ export interface FileRouteTypes {
     | '/_authenticated/agenda'
     | '/_authenticated/clinicas'
     | '/_authenticated/configuracoes'
+    | '/_authenticated/demandas'
     | '/_authenticated/equipe'
     | '/_authenticated/follow-ups'
     | '/_authenticated/intervencoes'
+    | '/_authenticated/meu-dia'
     | '/_authenticated/painel'
     | '/_authenticated/relatorios'
     | '/_authenticated/leads/$leadId'
@@ -231,6 +255,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/demandas': {
+      id: '/_authenticated/demandas'
+      path: '/demandas'
+      fullPath: '/demandas'
+      preLoaderRoute: typeof AuthenticatedDemandasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/equipe': {
       id: '/_authenticated/equipe'
       path: '/equipe'
@@ -250,6 +281,13 @@ declare module '@tanstack/react-router' {
       path: '/intervencoes'
       fullPath: '/intervencoes'
       preLoaderRoute: typeof AuthenticatedIntervencoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/meu-dia': {
+      id: '/_authenticated/meu-dia'
+      path: '/meu-dia'
+      fullPath: '/meu-dia'
+      preLoaderRoute: typeof AuthenticatedMeuDiaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/painel': {
@@ -287,9 +325,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
   AuthenticatedClinicasRoute: typeof AuthenticatedClinicasRoute
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
+  AuthenticatedDemandasRoute: typeof AuthenticatedDemandasRoute
   AuthenticatedEquipeRoute: typeof AuthenticatedEquipeRoute
   AuthenticatedFollowUpsRoute: typeof AuthenticatedFollowUpsRoute
   AuthenticatedIntervencoesRoute: typeof AuthenticatedIntervencoesRoute
+  AuthenticatedMeuDiaRoute: typeof AuthenticatedMeuDiaRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedLeadsLeadIdRoute: typeof AuthenticatedLeadsLeadIdRoute
@@ -300,9 +340,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
   AuthenticatedClinicasRoute: AuthenticatedClinicasRoute,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
+  AuthenticatedDemandasRoute: AuthenticatedDemandasRoute,
   AuthenticatedEquipeRoute: AuthenticatedEquipeRoute,
   AuthenticatedFollowUpsRoute: AuthenticatedFollowUpsRoute,
   AuthenticatedIntervencoesRoute: AuthenticatedIntervencoesRoute,
+  AuthenticatedMeuDiaRoute: AuthenticatedMeuDiaRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedLeadsLeadIdRoute: AuthenticatedLeadsLeadIdRoute,

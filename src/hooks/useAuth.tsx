@@ -1,5 +1,7 @@
 import { useEffect, useState, createContext, useContext, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
+import { toast } from "sonner";
+
 import { supabase } from "@/integrations/supabase/client";
 import type { AppRole } from "@/lib/domain";
 
@@ -42,9 +44,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from("profiles").select("id, full_name, email, phone, is_active").eq("id", userId).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle(),
     ]);
+    // Usuário desativado pelo gestor perde o acesso imediatamente.
+    if (profileData && (profileData as Profile).is_active === false) {
+      setProfile(null);
+      setRole(null);
+      await supabase.auth.signOut();
+      toast.error("Seu acesso foi desativado pelo gestor.");
+      return;
+    }
     setProfile((profileData as Profile) ?? null);
     setRole((roleData?.role as AppRole) ?? null);
   };
+
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, nextSession) => {

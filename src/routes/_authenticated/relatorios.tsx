@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { BarChart3, Download } from "lucide-react";
 import { PageHeader, SectionCard, StatCard, StatusBadge } from "@/components/Primitives";
-import { EmptyState, ErrorState, LoadingState } from "@/components/States";
+import { EmptyState, ErrorState, GestorOnly, LoadingState } from "@/components/States";
 import { useClinics, useLeads, useTeam } from "@/lib/api";
 import { LEAD_STATUS_LABEL, LEAD_STATUS_ORDER, LEAD_STATUS_TONE } from "@/lib/domain";
 import { addDays, endOfDay, formatDate, formatPercent, startOfDay } from "@/lib/format";
@@ -16,7 +16,11 @@ export const Route = createFileRoute("/_authenticated/relatorios")({
       { name: "description", content: "Indicadores de conversão, comparecimento e desempenho por clínica." },
     ],
   }),
-  component: RelatoriosPage,
+  component: () => (
+    <GestorOnly>
+      <RelatoriosPage />
+    </GestorOnly>
+  ),
 });
 
 type RangeKey = "7d" | "30d" | "90d";
