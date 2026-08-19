@@ -7,7 +7,13 @@ import { useClinics, useCompleteFollowUp, useFollowUps } from "@/lib/api";
 import { FOLLOWUP_STATUS_LABEL } from "@/lib/domain";
 import { formatDateTime, relativeDay } from "@/lib/format";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/follow-ups")({
   head: () => ({
@@ -27,7 +33,9 @@ function FollowUpsPage() {
   const complete = useCompleteFollowUp();
 
   const rows = query.data ?? [];
-  const overdue = rows.filter((r) => r.status === "pendente" && new Date(r.due_at).getTime() < Date.now());
+  const overdue = rows.filter(
+    (r) => r.status === "pendente" && new Date(r.due_at).getTime() < Date.now(),
+  );
   const todayCount = rows.filter(
     (r) => new Date(r.due_at).toDateString() === new Date().toDateString(),
   ).length;
@@ -86,7 +94,10 @@ function FollowUpsPage() {
           {rows.map((item) => {
             const late = item.status === "pendente" && new Date(item.due_at).getTime() < Date.now();
             return (
-              <li key={item.id} className="rounded-lg border border-border bg-card px-4 py-3 shadow-panel">
+              <li
+                key={item.id}
+                className="rounded-lg border border-border bg-card px-4 py-3 shadow-panel"
+              >
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                   <div className="min-w-0">
                     <Link
@@ -100,7 +111,9 @@ function FollowUpsPage() {
                       {formatDateTime(item.due_at)} · {item.clinic?.name}
                     </p>
                     {item.notes ? (
-                      <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.notes}</p>
+                      <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                        {item.notes}
+                      </p>
                     ) : null}
                   </div>
                   <span

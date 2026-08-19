@@ -15,7 +15,10 @@ export const Route = createFileRoute("/auth")({
       { title: "Entrar — Herval Flow" },
       { name: "description", content: "Acesso restrito à operação comercial da Herval Marketing." },
       { property: "og:title", content: "Entrar — Herval Flow" },
-      { property: "og:description", content: "Acesso restrito à operação comercial da Herval Marketing." },
+      {
+        property: "og:description",
+        content: "Acesso restrito à operação comercial da Herval Marketing.",
+      },
     ],
   }),
   component: AuthPage,
@@ -120,7 +123,8 @@ function AuthPage() {
 
           {checkEmail ? (
             <div className="rounded-lg border border-primary/50 bg-primary/10 p-4 text-sm">
-              Enviamos um e-mail de confirmação. Confirme o cadastro e faça login para acessar o sistema.
+              Enviamos um e-mail de confirmação. Confirme o cadastro e faça login para acessar o
+              sistema.
             </div>
           ) : null}
 
@@ -195,8 +199,8 @@ function AuthPage() {
                     required
                   />
                   <p className="text-xs text-muted-foreground">
-                    O primeiro cadastro do sistema recebe o papel de Gestor Comercial. Os demais entram como
-                    CRC.
+                    O primeiro cadastro do sistema recebe o papel de Gestor Comercial. Os demais
+                    entram como CRC.
                   </p>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>

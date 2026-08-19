@@ -45,7 +45,13 @@ export function LoadingState({ label = "Carregando..." }: { label?: string }) {
   );
 }
 
-export function ErrorState({ message = "Não foi possível carregar os dados.", onRetry }: { message?: string; onRetry?: () => void }) {
+export function ErrorState({
+  message = "Não foi possível carregar os dados.",
+  onRetry,
+}: {
+  message?: string;
+  onRetry?: () => void;
+}) {
   return (
     <div className="rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-6 text-center">
       <p className="text-sm font-medium text-destructive">{message}</p>

@@ -12,7 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -160,7 +166,9 @@ function ClinicasPage() {
               <dl className="mt-3 space-y-1 text-xs text-muted-foreground">
                 <div className="truncate">Telefone: {formatPhone(clinic.phone) || "—"}</div>
                 <div className="truncate">E-mail: {clinic.email || "—"}</div>
-                <div className="truncate">Instagram: {clinic.instagram ? `@${clinic.instagram}` : "—"}</div>
+                <div className="truncate">
+                  Instagram: {clinic.instagram ? `@${clinic.instagram}` : "—"}
+                </div>
               </dl>
               {isGestor ? (
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -171,7 +179,9 @@ function ClinicasPage() {
                     size="sm"
                     variant="ghost"
                     disabled={toggleClinic.isPending}
-                    onClick={() => toggleClinic.mutate({ id: clinic.id, is_active: !clinic.is_active })}
+                    onClick={() =>
+                      toggleClinic.mutate({ id: clinic.id, is_active: !clinic.is_active })
+                    }
                   >
                     {clinic.is_active ? "Desativar" : "Reativar"}
                   </Button>
@@ -204,7 +214,9 @@ function ClinicasPage() {
               <Input
                 id="clinic-resp"
                 value={form.responsible_professional}
-                onChange={(e) => setForm((s) => ({ ...s, responsible_professional: e.target.value }))}
+                onChange={(e) =>
+                  setForm((s) => ({ ...s, responsible_professional: e.target.value }))
+                }
               />
             </div>
             <div className="grid gap-1.5">

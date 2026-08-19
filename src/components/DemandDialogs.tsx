@@ -12,7 +12,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { StatusBadge } from "@/components/Primitives";
 import { EmptyState } from "@/components/States";
@@ -198,7 +204,9 @@ export function DemandFormDialog({
               <Label>Clínica</Label>
               <Select
                 value={form.clinic_id || NONE}
-                onValueChange={(value) => setForm((f) => ({ ...f, clinic_id: value === NONE ? "" : value }))}
+                onValueChange={(value) =>
+                  setForm((f) => ({ ...f, clinic_id: value === NONE ? "" : value }))
+                }
               >
                 <SelectTrigger aria-label="Clínica">
                   <SelectValue placeholder="Sem clínica" />
@@ -218,7 +226,9 @@ export function DemandFormDialog({
               <Label>Prioridade</Label>
               <Select
                 value={form.priority}
-                onValueChange={(value) => setForm((f) => ({ ...f, priority: value as DemandPriority }))}
+                onValueChange={(value) =>
+                  setForm((f) => ({ ...f, priority: value as DemandPriority }))
+                }
               >
                 <SelectTrigger aria-label="Prioridade">
                   <SelectValue />
@@ -289,7 +299,9 @@ export function DemandFormDialog({
                       onClick={() =>
                         setForm((f) => ({
                           ...f,
-                          tagIds: selected ? f.tagIds.filter((id) => id !== tag.id) : [...f.tagIds, tag.id],
+                          tagIds: selected
+                            ? f.tagIds.filter((id) => id !== tag.id)
+                            : [...f.tagIds, tag.id],
                         }))
                       }
                       className={cn(
@@ -327,10 +339,12 @@ export function DemandDetailDialog({
   demand,
   onOpenChange,
   onEdit,
+  onDelete,
 }: {
   demand: DemandWithRelations | null;
   onOpenChange: (open: boolean) => void;
   onEdit?: (demand: DemandWithRelations) => void;
+  onDelete?: (demand: DemandWithRelations) => void;
 }) {
   const { user, isGestor } = useAuth();
   const { data: team = [] } = useTeam();
@@ -339,6 +353,9 @@ export function DemandDetailDialog({
   const addComment = useAddComment();
   const deleteComment = useDeleteComment();
   const [body, setBody] = useState("");
+
+  const assignedMember = team.find((member) => member.id === demand?.assigned_to);
+  const isAssigneeInactive = Boolean(assignedMember && !assignedMember.is_active);
 
   const nameOf = (id?: string | null) =>
     (id ? team.find((member) => member.id === id)?.full_name : null) || "—";
@@ -356,9 +373,16 @@ export function DemandDetailDialog({
           <>
             <DialogHeader>
               <DialogTitle className="pr-6 text-left">{demand.title}</DialogTitle>
-              <DialogDescription className="text-left">
-                Responsável: {nameOf(demand.assigned_to)}
-                {demand.clinic ? ` · ${demand.clinic.name}` : ""}
+              <DialogDescription className="text-left flex flex-wrap items-center gap-2">
+                <span>
+                  Responsável: {nameOf(demand.assigned_to)}
+                  {demand.clinic ? ` · ${demand.clinic.name}` : ""}
+                </span>
+                {isAssigneeInactive ? (
+                  <span className="inline-flex items-center gap-1 rounded bg-warning/15 border border-warning/30 px-1.5 py-0.5 text-[11px] font-medium text-warning">
+                    ⚠️ Responsável desativado
+                  </span>
+                ) : null}
               </DialogDescription>
             </DialogHeader>
 
@@ -372,18 +396,37 @@ export function DemandDetailDialog({
                 tone={DEMAND_STATUS_TONE[demand.status]}
               />
               {isOverdue(demand) ? (
-                <StatusBadge label="Atrasada" tone="border-destructive bg-destructive/15 text-destructive" />
+                <StatusBadge
+                  label="Atrasada"
+                  tone="border-destructive bg-destructive/15 text-destructive"
+                />
               ) : null}
               {demand.demand_tags.map((row) =>
                 row.tag ? (
-                  <StatusBadge key={row.tag.id} label={row.tag.name} tone="border-border bg-muted text-muted-foreground" />
+                  <StatusBadge
+                    key={row.tag.id}
+                    label={row.tag.name}
+                    tone="border-border bg-muted text-muted-foreground"
+                  />
                 ) : null,
               )}
-              {onEdit ? (
-                <Button size="sm" variant="outline" className="ml-auto" onClick={() => onEdit(demand)}>
-                  Editar
-                </Button>
-              ) : null}
+              <div className="ml-auto flex items-center gap-1.5">
+                {onEdit ? (
+                  <Button size="sm" variant="outline" onClick={() => onEdit(demand)}>
+                    Editar
+                  </Button>
+                ) : null}
+                {onDelete ? (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    onClick={() => onDelete(demand)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                ) : null}
+              </div>
             </div>
 
             {demand.description ? (
@@ -455,7 +498,10 @@ export function DemandDetailDialog({
                   placeholder="Escreva um comentário operacional..."
                   onChange={(e) => setBody(e.target.value)}
                 />
-                <Button onClick={() => void send()} disabled={addComment.isPending || body.trim().length < 2}>
+                <Button
+                  onClick={() => void send()}
+                  disabled={addComment.isPending || body.trim().length < 2}
+                >
                   Enviar
                 </Button>
               </div>
@@ -524,7 +570,9 @@ export function TagManagerDialog({
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Etiquetas operacionais</DialogTitle>
-          <DialogDescription>Crie, renomeie, ative ou remova etiquetas das demandas.</DialogDescription>
+          <DialogDescription>
+            Crie, renomeie, ative ou remova etiquetas das demandas.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex items-end gap-2">
@@ -551,7 +599,10 @@ export function TagManagerDialog({
         </div>
 
         {sorted.length === 0 ? (
-          <EmptyState title="Nenhuma etiqueta" description="Crie a primeira etiqueta operacional." />
+          <EmptyState
+            title="Nenhuma etiqueta"
+            description="Crie a primeira etiqueta operacional."
+          />
         ) : (
           <ul className="space-y-1.5">
             {sorted.map((tag) => (
@@ -563,9 +614,15 @@ export function TagManagerDialog({
                 <Switch
                   checked={tag.is_active}
                   aria-label={`Ativar ${tag.name}`}
-                  onCheckedChange={(checked) => saveTag.mutate({ id: tag.id, name: tag.name, is_active: checked })}
+                  onCheckedChange={(checked) =>
+                    saveTag.mutate({ id: tag.id, name: tag.name, is_active: checked })
+                  }
                 />
-                <Button size="sm" variant="ghost" onClick={() => setEditing({ id: tag.id, name: tag.name })}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setEditing({ id: tag.id, name: tag.name })}
+                >
                   Editar
                 </Button>
                 <Button

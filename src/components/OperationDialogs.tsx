@@ -13,7 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   findDuplicateLeads,
   useClinics,
@@ -156,7 +162,10 @@ export function NewLeadDialog({
         <div className="grid gap-4">
           <div className="grid gap-1.5">
             <Label htmlFor="clinic">Clínica *</Label>
-            <Select value={form.clinic_id} onValueChange={(v) => setForm((f) => ({ ...f, clinic_id: v }))}>
+            <Select
+              value={form.clinic_id}
+              onValueChange={(v) => setForm((f) => ({ ...f, clinic_id: v }))}
+            >
               <SelectTrigger id="clinic">
                 <SelectValue placeholder="Selecione a clínica" />
               </SelectTrigger>
@@ -168,7 +177,9 @@ export function NewLeadDialog({
                 ))}
               </SelectContent>
             </Select>
-            {errors.clinic_id ? <p className="text-xs text-destructive">{errors.clinic_id}</p> : null}
+            {errors.clinic_id ? (
+              <p className="text-xs text-destructive">{errors.clinic_id}</p>
+            ) : null}
             {!clinics.length ? (
               <p className="text-xs text-muted-foreground">
                 Nenhuma clínica ativa cadastrada. Peça ao gestor para cadastrar uma clínica.
@@ -224,7 +235,10 @@ export function NewLeadDialog({
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="source">Origem</Label>
-              <Select value={form.source} onValueChange={(v) => setForm((f) => ({ ...f, source: v }))}>
+              <Select
+                value={form.source}
+                onValueChange={(v) => setForm((f) => ({ ...f, source: v }))}
+              >
                 <SelectTrigger id="source">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
@@ -402,7 +416,12 @@ export function FollowUpDialog({
         <div className="grid gap-4">
           <div className="grid gap-1.5">
             <Label htmlFor="due">Data prevista *</Label>
-            <Input id="due" type="datetime-local" value={dueAt} onChange={(e) => setDueAt(e.target.value)} />
+            <Input
+              id="due"
+              type="datetime-local"
+              value={dueAt}
+              onChange={(e) => setDueAt(e.target.value)}
+            />
             {error ? <p className="text-xs text-destructive">{error}</p> : null}
           </div>
           <div className="grid gap-1.5">
@@ -441,7 +460,8 @@ export function InterventionDialog({
   lead: { id: string; clinic_id: string; name: string };
 }) {
   const requestIntervention = useRequestIntervention();
-  const [reason, setReason] = useState<Database["public"]["Enums"]["intervention_reason"]>("ligacao");
+  const [reason, setReason] =
+    useState<Database["public"]["Enums"]["intervention_reason"]>("ligacao");
   const [description, setDescription] = useState("");
 
   useEffect(() => {

@@ -7,14 +7,23 @@ import { useAppointmentAction, useAppointments, useClinics } from "@/lib/api";
 import { APPOINTMENT_STATUS_LABEL, APPOINTMENT_STATUS_TONE } from "@/lib/domain";
 import { addDays, endOfDay, formatDateTime, startOfDay } from "@/lib/format";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/_authenticated/agenda")({
   head: () => ({
     meta: [
       { title: "Agenda — Herval Flow" },
-      { name: "description", content: "Consultas agendadas, confirmações, comparecimentos e no-shows." },
+      {
+        name: "description",
+        content: "Consultas agendadas, confirmações, comparecimentos e no-shows.",
+      },
     ],
   }),
   component: AgendaPage,
@@ -31,7 +40,8 @@ function AgendaPage() {
 
   const period = useMemo(() => {
     const now = new Date();
-    if (range === "hoje") return { from: startOfDay(now).toISOString(), to: endOfDay(now).toISOString() };
+    if (range === "hoje")
+      return { from: startOfDay(now).toISOString(), to: endOfDay(now).toISOString() };
     if (range === "amanha") {
       const tomorrow = addDays(now, 1);
       return { from: startOfDay(tomorrow).toISOString(), to: endOfDay(tomorrow).toISOString() };

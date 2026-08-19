@@ -4,7 +4,13 @@ import { Sparkles } from "lucide-react";
 import { PageHeader, StatCard, SectionCard, StatusBadge } from "@/components/Primitives";
 import { EmptyState, ErrorState, LoadingState } from "@/components/States";
 import { DemandDetailDialog } from "@/components/DemandDialogs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDemands, usePatchDemand, type DemandWithRelations } from "@/lib/api-demands";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -26,7 +32,10 @@ export const Route = createFileRoute("/_authenticated/meu-dia")({
   head: () => ({
     meta: [
       { title: "Meu Dia — Herval Flow" },
-      { name: "description", content: "Suas prioridades operacionais do dia: urgências, prazos e atrasos." },
+      {
+        name: "description",
+        content: "Suas prioridades operacionais do dia: urgências, prazos e atrasos.",
+      },
       { property: "og:title", content: "Meu Dia — Herval Flow" },
       { property: "og:description", content: "Prioridades do dia da operação comercial." },
     ],
@@ -58,14 +67,18 @@ function MeuDiaPage() {
       hoje: mine.filter((d) => isDueToday(d) && d.status !== "concluida").length,
       urgentes: open.filter((d) => d.priority === "urgente").length,
       alta: open.filter((d) => d.priority === "alta").length,
-      andamento: mine.filter((d) => d.status === "em_andamento").length,
+      fazendo: mine.filter((d) => d.status === "em_andamento").length,
       atrasadas: mine.filter(isOverdue).length,
       concluidas: mine.filter((d) => d.status === "concluida").length,
     };
   }, [mine]);
 
   const priorities = useMemo(
-    () => mine.filter((d) => d.status !== "concluida").sort(operationalSort).slice(0, 20),
+    () =>
+      mine
+        .filter((d) => d.status !== "concluida")
+        .sort(operationalSort)
+        .slice(0, 20),
     [mine],
   );
 
@@ -82,12 +95,15 @@ function MeuDiaPage() {
         <StatCard label="Tarefas de hoje" value={stats.hoje} />
         <StatCard label="Urgentes" value={stats.urgentes} tone="danger" />
         <StatCard label="Alta prioridade" value={stats.alta} tone="warning" />
-        <StatCard label="Em andamento" value={stats.andamento} tone="primary" />
+        <StatCard label="Fazendo" value={stats.fazendo} tone="primary" />
         <StatCard label="Atrasadas" value={stats.atrasadas} tone="danger" />
         <StatCard label="Concluídas" value={stats.concluidas} />
       </div>
 
-      <SectionCard title="Prioridades de hoje" description="Atrasadas primeiro, depois por urgência e prazo">
+      <SectionCard
+        title="Prioridades de hoje"
+        description="Atrasadas primeiro, depois por urgência e prazo"
+      >
         {demandsQuery.isPending ? (
           <LoadingState />
         ) : demandsQuery.isError ? (
@@ -105,7 +121,10 @@ function MeuDiaPage() {
               return (
                 <li
                   key={demand.id}
-                  className={cn("flex flex-wrap items-center gap-2 py-2.5", late && "bg-destructive/5")}
+                  className={cn(
+                    "flex flex-wrap items-center gap-2 py-2.5",
+                    late && "bg-destructive/5",
+                  )}
                 >
                   <button
                     onClick={() => setDetail(demand)}
@@ -115,13 +134,21 @@ function MeuDiaPage() {
                     <p className="truncate text-sm font-medium">
                       {DEMAND_PRIORITY_DOT[demand.priority]} {demand.title}
                     </p>
-                    <p className={cn("truncate text-xs", late ? "text-destructive" : "text-muted-foreground")}>
+                    <p
+                      className={cn(
+                        "truncate text-xs",
+                        late ? "text-destructive" : "text-muted-foreground",
+                      )}
+                    >
                       {demand.due_at ? `Prazo ${formatDateTime(demand.due_at)}` : "Sem prazo"}
                       {demand.clinic ? ` · ${demand.clinic.name}` : ""}
                     </p>
                   </button>
                   {late ? (
-                    <StatusBadge label="Atrasada" tone="border-destructive bg-destructive/15 text-destructive" />
+                    <StatusBadge
+                      label="Atrasada"
+                      tone="border-destructive bg-destructive/15 text-destructive"
+                    />
                   ) : (
                     <StatusBadge
                       label={DEMAND_PRIORITY_LABEL[demand.priority]}
@@ -134,9 +161,14 @@ function MeuDiaPage() {
                   />
                   <Select
                     value={demand.status}
-                    onValueChange={(value) => patch.mutate({ id: demand.id, status: value as DemandStatus })}
+                    onValueChange={(value) =>
+                      patch.mutate({ id: demand.id, status: value as DemandStatus })
+                    }
                   >
-                    <SelectTrigger className="h-9 w-40 shrink-0" aria-label={`Alterar status de ${demand.title}`}>
+                    <SelectTrigger
+                      className="h-9 w-40 shrink-0"
+                      aria-label={`Alterar status de ${demand.title}`}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

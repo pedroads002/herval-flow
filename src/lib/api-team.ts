@@ -34,7 +34,8 @@ export function useResetMemberPassword() {
   return useMutation({
     mutationFn: async (input: { user_id: string; password: string }) => reset({ data: input }),
     onSuccess: () => toast.success("Senha redefinida."),
-    onError: (error) => toast.error((error as Error)?.message || "Não foi possível redefinir a senha."),
+    onError: (error) =>
+      toast.error((error as Error)?.message || "Não foi possível redefinir a senha."),
   });
 }
 

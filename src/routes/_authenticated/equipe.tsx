@@ -19,7 +19,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/equipe")({
   head: () => ({
@@ -88,7 +94,12 @@ function EquipePage() {
   const [form, setForm] = useState<MemberForm>(emptyMember);
   const [errors, setErrors] = useState<Partial<Record<keyof MemberForm, string>>>({});
   const [editing, setEditing] = useState<TeamMember | null>(null);
-  const [editForm, setEditForm] = useState({ full_name: "", phone: "", avatar_url: "", password: "" });
+  const [editForm, setEditForm] = useState({
+    full_name: "",
+    phone: "",
+    avatar_url: "",
+    password: "",
+  });
 
   const submitNew = async () => {
     const next: Partial<Record<keyof MemberForm, string>> = {};
@@ -136,7 +147,9 @@ function EquipePage() {
       })
       .catch(() => null);
     if (editForm.password.length >= 8) {
-      await resetPassword.mutateAsync({ user_id: editing.id, password: editForm.password }).catch(() => null);
+      await resetPassword
+        .mutateAsync({ user_id: editing.id, password: editForm.password })
+        .catch(() => null);
     }
     setEditing(null);
   };
@@ -160,7 +173,11 @@ function EquipePage() {
       ) : teamQuery.isError ? (
         <ErrorState onRetry={() => void teamQuery.refetch()} />
       ) : teamQuery.data.length === 0 ? (
-        <EmptyState icon={UserCog} title="Nenhum usuário" description="Cadastre sua equipe para começar." />
+        <EmptyState
+          icon={UserCog}
+          title="Nenhum usuário"
+          description="Cadastre sua equipe para começar."
+        />
       ) : (
         <ul className="space-y-2">
           {teamQuery.data.map((member) => (
@@ -173,7 +190,9 @@ function EquipePage() {
                 <p className="truncate text-sm font-semibold">
                   {member.full_name || "Sem nome"}
                   {member.is_active ? null : (
-                    <span className="ml-2 text-xs font-medium text-muted-foreground">(inativo)</span>
+                    <span className="ml-2 text-xs font-medium text-muted-foreground">
+                      (inativo)
+                    </span>
                   )}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">{member.email}</p>
@@ -183,9 +202,14 @@ function EquipePage() {
                 <>
                   <Select
                     value={member.role ?? ""}
-                    onValueChange={(value) => updateMember.mutate({ id: member.id, role: value as AppRole })}
+                    onValueChange={(value) =>
+                      updateMember.mutate({ id: member.id, role: value as AppRole })
+                    }
                   >
-                    <SelectTrigger className="w-40 shrink-0" aria-label={`Papel de ${member.full_name}`}>
+                    <SelectTrigger
+                      className="w-40 shrink-0"
+                      aria-label={`Papel de ${member.full_name}`}
+                    >
                       <SelectValue placeholder="Sem papel" />
                     </SelectTrigger>
                     <SelectContent>
@@ -236,7 +260,9 @@ function EquipePage() {
                 maxLength={120}
                 onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))}
               />
-              {errors.full_name ? <p className="text-xs text-destructive">{errors.full_name}</p> : null}
+              {errors.full_name ? (
+                <p className="text-xs text-destructive">{errors.full_name}</p>
+              ) : null}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="member-email">E-mail *</Label>
@@ -258,7 +284,9 @@ function EquipePage() {
                 maxLength={72}
                 onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
               />
-              {errors.password ? <p className="text-xs text-destructive">{errors.password}</p> : null}
+              {errors.password ? (
+                <p className="text-xs text-destructive">{errors.password}</p>
+              ) : null}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="member-phone">Telefone</Label>
@@ -281,7 +309,10 @@ function EquipePage() {
             </div>
             <div className="space-y-1.5">
               <Label>Perfil de acesso</Label>
-              <Select value={form.role} onValueChange={(value) => setForm((f) => ({ ...f, role: value as AppRole }))}>
+              <Select
+                value={form.role}
+                onValueChange={(value) => setForm((f) => ({ ...f, role: value as AppRole }))}
+              >
                 <SelectTrigger aria-label="Perfil de acesso">
                   <SelectValue />
                 </SelectTrigger>

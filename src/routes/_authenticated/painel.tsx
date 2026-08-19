@@ -14,16 +14,25 @@ import {
   LEAD_STATUS_ORDER,
   LEAD_STATUS_TONE,
 } from "@/lib/domain";
-import { addDays, endOfDay, formatDateTime, formatPercent, relativeDay, startOfDay } from "@/lib/format";
+import {
+  addDays,
+  endOfDay,
+  formatDateTime,
+  formatPercent,
+  relativeDay,
+  startOfDay,
+} from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 
 export const Route = createFileRoute("/_authenticated/painel")({
   head: () => ({
     meta: [
       { title: "Painel — Herval Flow" },
-      { name: "description", content: "Visão diária da operação comercial: agenda, follow-ups e alertas." },
+      {
+        name: "description",
+        content: "Visão diária da operação comercial: agenda, follow-ups e alertas.",
+      },
     ],
   }),
   component: PainelPage,
@@ -60,7 +69,11 @@ function PainelPage() {
 
   const total = leads.length;
   const attended = counts.get("compareceu") ?? 0;
-  const scheduled = (counts.get("agendado") ?? 0) + (counts.get("confirmado") ?? 0) + attended + (counts.get("no_show") ?? 0);
+  const scheduled =
+    (counts.get("agendado") ?? 0) +
+    (counts.get("confirmado") ?? 0) +
+    attended +
+    (counts.get("no_show") ?? 0);
   const conversion = total ? attended / total : 0;
   const showRate = scheduled ? attended / scheduled : 0;
 
@@ -103,8 +116,6 @@ function PainelPage() {
     [team, demands, isGestor],
   );
 
-
-
   return (
     <>
       <PageHeader
@@ -128,8 +139,16 @@ function PainelPage() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Leads no período" value={total} hint="Novos cadastros" />
         <StatCard label="Agendamentos" value={scheduled} hint="Consultas geradas" tone="primary" />
-        <StatCard label="Comparecimento" value={formatPercent(showRate)} hint={`${attended} presenças`} />
-        <StatCard label="Conversão lead→consulta" value={formatPercent(conversion)} tone="primary" />
+        <StatCard
+          label="Comparecimento"
+          value={formatPercent(showRate)}
+          hint={`${attended} presenças`}
+        />
+        <StatCard
+          label="Conversão lead→consulta"
+          value={formatPercent(conversion)}
+          tone="primary"
+        />
       </div>
 
       <SectionCard
@@ -156,7 +175,7 @@ function PainelPage() {
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               <StatCard label="Total" value={demandStats.total} />
               <StatCard label="Pendentes" value={demandStats.pendentes} />
-              <StatCard label="Em andamento" value={demandStats.andamento} tone="primary" />
+              <StatCard label="Fazendo" value={demandStats.andamento} tone="primary" />
               <StatCard label="Concluídas" value={demandStats.concluidas} />
               <StatCard label="Atrasadas" value={demandStats.atrasadas} tone="danger" />
             </div>
@@ -168,7 +187,7 @@ function PainelPage() {
                     <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                       <th className="py-2 pr-3 font-medium">CRC</th>
                       <th className="py-2 px-3 font-medium">Pendentes</th>
-                      <th className="py-2 px-3 font-medium">Em andamento</th>
+                      <th className="py-2 px-3 font-medium">Fazendo</th>
                       <th className="py-2 px-3 font-medium">Concluídas</th>
                       <th className="py-2 pl-3 font-medium">Atrasadas</th>
                     </tr>
@@ -194,8 +213,6 @@ function PainelPage() {
           </div>
         )}
       </SectionCard>
-
-
 
       <div className="grid gap-4 lg:grid-cols-2">
         <SectionCard
@@ -323,7 +340,9 @@ function PainelPage() {
                     </Link>
                     <p className="truncate text-xs text-muted-foreground">{item.clinic?.name}</p>
                   </div>
-                  <span className="shrink-0 text-xs text-muted-foreground">{relativeDay(item.created_at)}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    {relativeDay(item.created_at)}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -349,13 +368,19 @@ function PainelPage() {
                 return (
                   <li key={status} className="space-y-1">
                     <div className="flex items-center justify-between gap-2 text-xs">
-                      <StatusBadge label={LEAD_STATUS_LABEL[status]} tone={LEAD_STATUS_TONE[status]} />
+                      <StatusBadge
+                        label={LEAD_STATUS_LABEL[status]}
+                        tone={LEAD_STATUS_TONE[status]}
+                      />
                       <span className="tabular text-muted-foreground">
                         {value} · {pct}%
                       </span>
                     </div>
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                      <div
+                        className="h-full rounded-full bg-primary"
+                        style={{ width: `${pct}%` }}
+                      />
                     </div>
                   </li>
                 );

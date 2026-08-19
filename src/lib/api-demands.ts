@@ -37,7 +37,9 @@ export function useSaveTag() {
     mutationFn: async (input: { id?: string; name: string; is_active?: boolean }) => {
       const payload = { name: input.name.trim(), is_active: input.is_active ?? true };
       if (input.id) {
-        return assertOk(await supabase.from("tags").update(payload).eq("id", input.id).select().single());
+        return assertOk(
+          await supabase.from("tags").update(payload).eq("id", input.id).select().single(),
+        );
       }
       const { data: userData } = await supabase.auth.getUser();
       return assertOk(
@@ -204,7 +206,9 @@ export function usePatchDemand() {
       id,
       ...patch
     }: { id: string } & Partial<Pick<Demand, "status" | "priority" | "assigned_to" | "due_at">>) =>
-      assertOk(await supabase.from("demands").update(patch).eq("id", id).select().single()) as Demand,
+      assertOk(
+        await supabase.from("demands").update(patch).eq("id", id).select().single(),
+      ) as Demand,
     onSuccess: (demand) => {
       qc.invalidateQueries({ queryKey: ["demands"] });
       qc.invalidateQueries({ queryKey: ["demand-events", demand.id] });
@@ -234,7 +238,9 @@ export function useArchiveDemand() {
     },
     onSuccess: (_d, vars) => {
       qc.invalidateQueries({ queryKey: ["demands"] });
-      toast.success(vars.archived ? "Demanda arquivada (histórico preservado)." : "Demanda restaurada.");
+      toast.success(
+        vars.archived ? "Demanda arquivada (histórico preservado)." : "Demanda restaurada.",
+      );
     },
     onError: (error) => toast.error(friendlyError(error, "Não foi possível arquivar a demanda.")),
   });
@@ -273,5 +279,130 @@ export function useDeleteComment() {
       qc.invalidateQueries({ queryKey: ["demand-comments", comment.demand_id] });
     },
     onError: (error) => toast.error(friendlyError(error, "Não foi possível remover o comentário.")),
+  });
+}
+
+/* ---------------------------- EXCLUSÃO & APROVAÇÃO ---------------------------- */
+
+export type DeletionRequest = Database["public"]["Tables"]["deletion_requests"]["Row"];
+
+export type DeletionRequestWithRelations = DeletionRequest & {
+  demand?: { id: string; title: string; clinic?: { id: string; name: string } | null } | null;
+};
+
+/** Exclusão direta executada pelo Gestor/ADM */
+export function useDeleteDemand() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (demandId: string) => {
+      const { error } = await supabase.from("demands").delete().eq("id", demandId);
+      if (error) throw error;
+      return demandId;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["demands"] });
+      toast.success("Demanda excluída com sucesso.");
+    },
+    onError: (error) => toast.error(friendlyError(error, "Não foi possível excluir a demanda.")),
+  });
+}
+
+/** Solicitação de exclusão submetida por usuário CRC */
+export function useRequestDemandDeletion() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      demandId,
+      demandTitle,
+      reason,
+    }: {
+      demandId: string;
+      demandTitle: string;
+      reason?: string;
+    }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Usuário não autenticado.");
+      const result = await supabase
+        .from("deletion_requests")
+        .insert({
+          entity_type: "demand",
+          entity_id: demandId,
+          demand_id: demandId,
+          entity_label: demandTitle,
+          reason: reason?.trim() || null,
+          status: "pendente",
+          requested_by: userData.user.id,
+        })
+        .select()
+        .single();
+      return assertOk(result);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["deletion-requests"] });
+      toast.info("Exclusão pendente. Aguarde a aprovação do ADM.");
+    },
+    onError: (error) => toast.error(friendlyError(error, "Não foi possível solicitar a exclusão.")),
+  });
+}
+
+/** Listagem de solicitações de exclusão */
+export function useDeletionRequests(options?: { status?: string }) {
+  return useQuery({
+    queryKey: ["deletion-requests", options?.status ?? "pendente"],
+    queryFn: async () => {
+      let query = supabase
+        .from("deletion_requests")
+        .select("*, demand:demands(id, title, clinic:clinics(id, name))")
+        .order("created_at", { ascending: false });
+      if (options?.status) {
+        query = query.eq("status", options.status);
+      }
+      return assertOk(await query) as DeletionRequestWithRelations[];
+    },
+  });
+}
+
+/** Avaliação de solicitação de exclusão pelo Gestor */
+export function useReviewDeletionRequest() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      requestId,
+      demandId,
+      decision,
+    }: {
+      requestId: string;
+      demandId?: string | null;
+      decision: "aprovada" | "rejeitada";
+    }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      const now = new Date().toISOString();
+      if (decision === "aprovada" && demandId) {
+        const { error: delErr } = await supabase.from("demands").delete().eq("id", demandId);
+        if (delErr) throw delErr;
+      }
+      const result = await supabase
+        .from("deletion_requests")
+        .update({
+          status: decision,
+          reviewed_by: userData.user?.id ?? null,
+          reviewed_at: now,
+        })
+        .eq("id", requestId)
+        .select()
+        .single();
+      return assertOk(result);
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ["deletion-requests"] });
+      qc.invalidateQueries({ queryKey: ["demands"] });
+      toast.success(
+        vars.decision === "aprovada"
+          ? "Solicitação aprovada e demanda excluída."
+          : "Solicitação de exclusão recusada.",
+      );
+    },
+    onError: (error) =>
+      toast.error(friendlyError(error, "Não foi possível avaliar a solicitação.")),
   });
 }

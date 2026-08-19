@@ -22,6 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme, type Theme } from "@/lib/theme";
 import { Logo } from "@/components/Logo";
+import { NotificationBell } from "@/components/NotificationBell";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -54,7 +55,6 @@ const NAV: NavItem[] = [
 ];
 
 const MOBILE_NAV = ["/meu-dia", "/demandas", "/leads", "/intervencoes"];
-
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -174,6 +174,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </p>
 
           <div className="ml-auto flex shrink-0 items-center gap-1">
+            <NotificationBell />
             <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -202,7 +203,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-7xl space-y-5 px-3 pb-28 pt-4 sm:px-6 lg:pb-10">{children}</main>
+        <main className="mx-auto w-full max-w-7xl space-y-5 px-3 pb-28 pt-4 sm:px-6 lg:pb-10">
+          {children}
+        </main>
       </div>
 
       {/* Ação rápida mobile */}

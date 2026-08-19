@@ -30,7 +30,11 @@ import {
 import { formatDateTime, formatPhone, onlyDigits, relativeDay } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { AppointmentDialog, FollowUpDialog, InterventionDialog } from "@/components/OperationDialogs";
+import {
+  AppointmentDialog,
+  FollowUpDialog,
+  InterventionDialog,
+} from "@/components/OperationDialogs";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/leads/$leadId")({
@@ -82,9 +86,15 @@ function LeadDetailPage() {
         description={`${lead.clinic?.name ?? "Sem clínica"} · criado ${relativeDay(lead.created_at)}`}
         actions={
           <>
-            <StatusBadge label={LEAD_STATUS_LABEL[lead.status]} tone={LEAD_STATUS_TONE[lead.status]} />
+            <StatusBadge
+              label={LEAD_STATUS_LABEL[lead.status]}
+              tone={LEAD_STATUS_TONE[lead.status]}
+            />
             {lead.intervention_pending ? (
-              <StatusBadge label="Intervenção pendente" tone="border-destructive/40 text-destructive" />
+              <StatusBadge
+                label="Intervenção pendente"
+                tone="border-destructive/40 text-destructive"
+              />
             ) : null}
           </>
         }
@@ -130,7 +140,9 @@ function LeadDetailPage() {
                 {(appointmentsQuery.data ?? []).map((appointment) => (
                   <li key={appointment.id} className="rounded-md border border-border p-3">
                     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
-                      <p className="truncate text-sm font-medium">{formatDateTime(appointment.scheduled_at)}</p>
+                      <p className="truncate text-sm font-medium">
+                        {formatDateTime(appointment.scheduled_at)}
+                      </p>
                       <StatusBadge
                         label={APPOINTMENT_STATUS_LABEL[appointment.status]}
                         tone={APPOINTMENT_STATUS_TONE[appointment.status]}
@@ -157,7 +169,9 @@ function LeadDetailPage() {
                           size="sm"
                           variant="outline"
                           disabled={appointmentAction.isPending}
-                          onClick={() => appointmentAction.mutate({ appointment, action: "comparecimento" })}
+                          onClick={() =>
+                            appointmentAction.mutate({ appointment, action: "comparecimento" })
+                          }
                         >
                           Compareceu
                         </Button>
@@ -165,7 +179,9 @@ function LeadDetailPage() {
                           size="sm"
                           variant="outline"
                           disabled={appointmentAction.isPending}
-                          onClick={() => appointmentAction.mutate({ appointment, action: "no_show" })}
+                          onClick={() =>
+                            appointmentAction.mutate({ appointment, action: "no_show" })
+                          }
                         >
                           No-show
                         </Button>
@@ -183,7 +199,9 @@ function LeadDetailPage() {
                           size="sm"
                           variant="ghost"
                           disabled={appointmentAction.isPending}
-                          onClick={() => appointmentAction.mutate({ appointment, action: "cancelar" })}
+                          onClick={() =>
+                            appointmentAction.mutate({ appointment, action: "cancelar" })
+                          }
                         >
                           Cancelar
                         </Button>
@@ -201,7 +219,11 @@ function LeadDetailPage() {
             ) : eventsQuery.isError ? (
               <ErrorState onRetry={() => void eventsQuery.refetch()} />
             ) : eventsQuery.data.length === 0 ? (
-              <EmptyState icon={History} title="Sem histórico" description="As ações aparecerão aqui." />
+              <EmptyState
+                icon={History}
+                title="Sem histórico"
+                description="As ações aparecerão aqui."
+              />
             ) : (
               <ol className="space-y-3 border-l border-border pl-4">
                 {eventsQuery.data.map((event) => (
@@ -213,7 +235,9 @@ function LeadDetailPage() {
                     {event.description ? (
                       <p className="text-xs text-muted-foreground">{event.description}</p>
                     ) : null}
-                    <p className="text-[11px] text-muted-foreground">{formatDateTime(event.created_at)}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {formatDateTime(event.created_at)}
+                    </p>
                   </li>
                 ))}
               </ol>
@@ -234,7 +258,9 @@ function LeadDetailPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Instagram className="h-4 w-4 shrink-0 text-muted-foreground" />
-                <span className="truncate">{lead.instagram ? `@${lead.instagram}` : "Não informado"}</span>
+                <span className="truncate">
+                  {lead.instagram ? `@${lead.instagram}` : "Não informado"}
+                </span>
               </div>
               <div className="pt-2 text-xs text-muted-foreground">
                 Origem: {lead.source ?? "Não informada"}
@@ -256,7 +282,10 @@ function LeadDetailPage() {
                     onClick={() => {
                       updateLead.mutate(
                         { id: lead.id, status, last_interaction_at: new Date().toISOString() },
-                        { onSuccess: () => toast.success(`Lead movido para ${LEAD_STATUS_LABEL[status]}.`) },
+                        {
+                          onSuccess: () =>
+                            toast.success(`Lead movido para ${LEAD_STATUS_LABEL[status]}.`),
+                        },
                       );
                     }}
                   >

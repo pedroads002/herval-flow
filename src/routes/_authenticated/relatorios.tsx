@@ -13,7 +13,10 @@ export const Route = createFileRoute("/_authenticated/relatorios")({
   head: () => ({
     meta: [
       { title: "Relatórios — Herval Flow" },
-      { name: "description", content: "Indicadores de conversão, comparecimento e desempenho por clínica." },
+      {
+        name: "description",
+        content: "Indicadores de conversão, comparecimento e desempenho por clínica.",
+      },
     ],
   }),
   component: () => (
@@ -57,7 +60,10 @@ function RelatoriosPage() {
   }, [leads]);
 
   const byClinic = useMemo(() => {
-    const map = new Map<string, { name: string; total: number; scheduled: number; attended: number }>();
+    const map = new Map<
+      string,
+      { name: string; total: number; scheduled: number; attended: number }
+    >();
     for (const lead of leads) {
       const key = lead.clinic?.id ?? "sem";
       const entry = map.get(key) ?? {
@@ -169,13 +175,19 @@ function RelatoriosPage() {
                   return (
                     <li key={status} className="space-y-1">
                       <div className="flex items-center justify-between gap-2 text-xs">
-                        <StatusBadge label={LEAD_STATUS_LABEL[status]} tone={LEAD_STATUS_TONE[status]} />
+                        <StatusBadge
+                          label={LEAD_STATUS_LABEL[status]}
+                          tone={LEAD_STATUS_TONE[status]}
+                        />
                         <span className="tabular text-muted-foreground">
                           {value} · {pct}%
                         </span>
                       </div>
                       <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                        <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                        <div
+                          className="h-full rounded-full bg-primary"
+                          style={{ width: `${pct}%` }}
+                        />
                       </div>
                     </li>
                   );
@@ -183,10 +195,16 @@ function RelatoriosPage() {
               </ul>
             </SectionCard>
 
-            <SectionCard title="Desempenho por clínica" description={`${clinics.data?.length ?? 0} clínicas`}>
+            <SectionCard
+              title="Desempenho por clínica"
+              description={`${clinics.data?.length ?? 0} clínicas`}
+            >
               <ul className="space-y-2 text-sm">
                 {byClinic.map((row) => (
-                  <li key={row.name} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                  <li
+                    key={row.name}
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2"
+                  >
                     <span className="truncate">{row.name}</span>
                     <span className="tabular shrink-0 text-xs text-muted-foreground">
                       {row.total} leads · {row.scheduled} agend. ·{" "}
@@ -200,10 +218,14 @@ function RelatoriosPage() {
             <SectionCard title="Desempenho por CRC" className="lg:col-span-2">
               <ul className="space-y-2 text-sm">
                 {byCrc.map((row) => (
-                  <li key={row.name} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                  <li
+                    key={row.name}
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2"
+                  >
                     <span className="truncate">{row.name}</span>
                     <span className="tabular shrink-0 text-xs text-muted-foreground">
-                      {row.total} leads · {formatPercent(row.total ? row.attended / row.total : 0)} conversão
+                      {row.total} leads · {formatPercent(row.total ? row.attended / row.total : 0)}{" "}
+                      conversão
                     </span>
                   </li>
                 ))}

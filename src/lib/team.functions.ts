@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const createSchema = z.object({
@@ -16,7 +17,7 @@ const resetSchema = z.object({
   password: z.string().min(8).max(72),
 });
 
-async function assertGestor(context: { supabase: any; userId: string }) {
+async function assertGestor(context: { supabase: SupabaseClient; userId: string }) {
   const { data, error } = await context.supabase
     .from("user_roles")
     .select("role")
@@ -41,7 +42,8 @@ export const createTeamMember = createServerFn({ method: "POST" })
     });
     if (error || !created.user) {
       const message = error?.message ?? "";
-      if (message.toLowerCase().includes("already")) throw new Error("Já existe um usuário com este e-mail.");
+      if (message.toLowerCase().includes("already"))
+        throw new Error("Já existe um usuário com este e-mail.");
       throw new Error("Não foi possível criar o usuário.");
     }
 

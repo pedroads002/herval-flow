@@ -16,7 +16,10 @@ export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type LeadWithRelations = Lead & { clinic: Pick<Clinic, "id" | "name" | "specialty"> | null };
 
 /** Traduz erros técnicos do banco em mensagens claras em português. */
-export function friendlyError(error: unknown, fallback = "Não foi possível concluir a operação."): string {
+export function friendlyError(
+  error: unknown,
+  fallback = "Não foi possível concluir a operação.",
+): string {
   const err = error as { code?: string; message?: string; details?: string } | null;
   if (!err) return fallback;
   const message = err.message ?? "";
@@ -26,7 +29,8 @@ export function friendlyError(error: unknown, fallback = "Não foi possível con
       return "Este lead já possui uma consulta ativa. Reagende ou finalize a consulta existente.";
     }
     if (message.includes("appointments_unique_slot")) return "Esta consulta já foi registrada.";
-    if (message.includes("leads_clinic_phone_unique")) return "Lead já existente com este telefone nesta clínica.";
+    if (message.includes("leads_clinic_phone_unique"))
+      return "Lead já existente com este telefone nesta clínica.";
     if (message.includes("leads_clinic_instagram_unique"))
       return "Lead já existente com este Instagram nesta clínica.";
     if (message.includes("clinics_name_unique")) return "Já existe uma clínica com este nome.";
@@ -38,7 +42,8 @@ export function friendlyError(error: unknown, fallback = "Não foi possível con
     return "Você não tem permissão para realizar esta ação.";
   }
   if (err.code === "23503") return "Registro relacionado inválido ou inexistente.";
-  if (message.startsWith("Lead neste status")) return "Informe a data da consulta antes de avançar este status.";
+  if (message.startsWith("Lead neste status"))
+    return "Informe a data da consulta antes de avançar este status.";
   if (message.includes("motivo da perda")) return "Informe o motivo da perda.";
   if (message) return fallback;
   return fallback;
@@ -55,7 +60,9 @@ export function useClinics(options?: { onlyActive?: boolean }) {
   return useQuery({
     queryKey: ["clinics"],
     queryFn: async () =>
-      assertOk(await supabase.from("clinics").select("*").order("name", { ascending: true })) as Clinic[],
+      assertOk(
+        await supabase.from("clinics").select("*").order("name", { ascending: true }),
+      ) as Clinic[],
     select: (data) => (options?.onlyActive ? data.filter((c) => c.is_active) : data),
   });
 }
@@ -76,7 +83,9 @@ export function useSaveClinic() {
         is_active: input.is_active ?? true,
       };
       if (input.id) {
-        return assertOk(await supabase.from("clinics").update(payload).eq("id", input.id).select().single());
+        return assertOk(
+          await supabase.from("clinics").update(payload).eq("id", input.id).select().single(),
+        );
       }
       const { data: userData } = await supabase.auth.getUser();
       return assertOk(
@@ -104,7 +113,8 @@ export function useToggleClinic() {
       qc.invalidateQueries({ queryKey: ["clinics"] });
       toast.success(vars.is_active ? "Clínica reativada." : "Clínica desativada.");
     },
-    onError: (error) => toast.error(friendlyError(error, "Não foi possível alterar o status da clínica.")),
+    onError: (error) =>
+      toast.error(friendlyError(error, "Não foi possível alterar o status da clínica.")),
   });
 }
 
@@ -130,9 +140,11 @@ export function useLeads(filters: LeadFilters = {}) {
         .order("created_at", { ascending: false })
         .limit(500);
 
-      if (filters.clinicId && filters.clinicId !== "todos") query = query.eq("clinic_id", filters.clinicId);
+      if (filters.clinicId && filters.clinicId !== "todos")
+        query = query.eq("clinic_id", filters.clinicId);
       if (filters.status && filters.status !== "todos") query = query.eq("status", filters.status);
-      if (filters.crcId && filters.crcId !== "todos") query = query.eq("assigned_to", filters.crcId);
+      if (filters.crcId && filters.crcId !== "todos")
+        query = query.eq("assigned_to", filters.crcId);
       if (filters.interventionOnly) query = query.eq("intervention_pending", true);
       if (filters.from) query = query.gte("created_at", filters.from);
       if (filters.to) query = query.lte("created_at", filters.to);
@@ -153,7 +165,11 @@ export function useLead(id: string) {
     queryKey: ["lead", id],
     queryFn: async () =>
       assertOk(
-        await supabase.from("leads").select("*, clinic:clinics(id, name, specialty)").eq("id", id).single(),
+        await supabase
+          .from("leads")
+          .select("*, clinic:clinics(id, name, specialty)")
+          .eq("id", id)
+          .single(),
       ) as LeadWithRelations,
     enabled: Boolean(id),
   });
@@ -187,7 +203,8 @@ export async function findDuplicateLeads(input: {
   const whatsapp = onlyDigits(input.whatsapp);
   const instagram = normalizeInstagram(input.instagram);
   if (phone) conditions.push(`phone.eq.${phone}`, `whatsapp.eq.${phone}`);
-  if (whatsapp && whatsapp !== phone) conditions.push(`phone.eq.${whatsapp}`, `whatsapp.eq.${whatsapp}`);
+  if (whatsapp && whatsapp !== phone)
+    conditions.push(`phone.eq.${whatsapp}`, `whatsapp.eq.${whatsapp}`);
   if (instagram) conditions.push(`instagram.eq.${instagram}`);
   if (!conditions.length && input.name?.trim()) conditions.push(`name.ilike.${input.name.trim()}`);
   if (!conditions.length) return [] as LeadWithRelations[];
@@ -202,7 +219,12 @@ export async function findDuplicateLeads(input: {
   return (data ?? []) as LeadWithRelations[];
 }
 
-export async function logEvent(leadId: string, eventType: string, description?: string, metadata?: object) {
+export async function logEvent(
+  leadId: string,
+  eventType: string,
+  description?: string,
+  metadata?: object,
+) {
   const { data: userData } = await supabase.auth.getUser();
   await supabase.from("lead_events").insert({
     lead_id: leadId,
@@ -278,13 +300,15 @@ export type AppointmentWithRelations = Appointment & {
   clinic: Pick<Clinic, "id" | "name"> | null;
 };
 
-export function useAppointments(filters: {
-  clinicId?: string;
-  status?: string;
-  from?: string;
-  to?: string;
-  crcId?: string;
-} = {}) {
+export function useAppointments(
+  filters: {
+    clinicId?: string;
+    status?: string;
+    from?: string;
+    to?: string;
+    crcId?: string;
+  } = {},
+) {
   return useQuery({
     queryKey: ["appointments", filters],
     queryFn: async () => {
@@ -293,8 +317,10 @@ export function useAppointments(filters: {
         .select("*, lead:leads(id, name, phone, status, assigned_to), clinic:clinics(id, name)")
         .order("scheduled_at", { ascending: true })
         .limit(500);
-      if (filters.clinicId && filters.clinicId !== "todos") query = query.eq("clinic_id", filters.clinicId);
-      if (filters.status && filters.status !== "todos") query = query.eq("status", filters.status as never);
+      if (filters.clinicId && filters.clinicId !== "todos")
+        query = query.eq("clinic_id", filters.clinicId);
+      if (filters.status && filters.status !== "todos")
+        query = query.eq("status", filters.status as never);
       if (filters.from) query = query.gte("scheduled_at", filters.from);
       if (filters.to) query = query.lte("scheduled_at", filters.to);
       const rows = assertOk(await query) as AppointmentWithRelations[];
@@ -374,7 +400,8 @@ export function useCreateAppointment() {
       qc.invalidateQueries({ queryKey: ["metrics"] });
       toast.success("Agendamento registrado.");
     },
-    onError: (error) => toast.error(friendlyError(error, "Não foi possível registrar o agendamento.")),
+    onError: (error) =>
+      toast.error(friendlyError(error, "Não foi possível registrar o agendamento.")),
   });
 }
 
@@ -383,7 +410,13 @@ type AppointmentAction = "confirmar" | "comparecimento" | "no_show" | "cancelar"
 export function useAppointmentAction() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ appointment, action }: { appointment: Appointment; action: AppointmentAction }) => {
+    mutationFn: async ({
+      appointment,
+      action,
+    }: {
+      appointment: Appointment;
+      action: AppointmentAction;
+    }) => {
       const now = new Date().toISOString();
       const patch: Partial<Appointment> = {};
       const leadPatch: Partial<Lead> = { last_interaction_at: now };
@@ -408,11 +441,19 @@ export function useAppointmentAction() {
       }
 
       const updated = assertOk(
-        await supabase.from("appointments").update(patch).eq("id", appointment.id).select().single(),
+        await supabase
+          .from("appointments")
+          .update(patch)
+          .eq("id", appointment.id)
+          .select()
+          .single(),
       ) as Appointment;
 
       if (action !== "cancelar") {
-        const { error } = await supabase.from("leads").update(leadPatch).eq("id", appointment.lead_id);
+        const { error } = await supabase
+          .from("leads")
+          .update(leadPatch)
+          .eq("id", appointment.lead_id);
         if (error) throw error;
       }
 
@@ -453,9 +494,12 @@ export function useFollowUps(filters: { status?: string; clinicId?: string; crcI
         .select("*, lead:leads(id, name, phone, status), clinic:clinics(id, name)")
         .order("due_at", { ascending: true })
         .limit(500);
-      if (filters.status && filters.status !== "todos") query = query.eq("status", filters.status as never);
-      if (filters.clinicId && filters.clinicId !== "todos") query = query.eq("clinic_id", filters.clinicId);
-      if (filters.crcId && filters.crcId !== "todos") query = query.eq("assigned_to", filters.crcId);
+      if (filters.status && filters.status !== "todos")
+        query = query.eq("status", filters.status as never);
+      if (filters.clinicId && filters.clinicId !== "todos")
+        query = query.eq("clinic_id", filters.clinicId);
+      if (filters.crcId && filters.crcId !== "todos")
+        query = query.eq("assigned_to", filters.crcId);
       return assertOk(await query) as FollowUpWithRelations[];
     },
   });
@@ -464,7 +508,12 @@ export function useFollowUps(filters: { status?: string; clinicId?: string; crcI
 export function useCreateFollowUp() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { lead_id: string; clinic_id: string; due_at: string; notes?: string }) => {
+    mutationFn: async (input: {
+      lead_id: string;
+      clinic_id: string;
+      due_at: string;
+      notes?: string;
+    }) => {
       const { data: userData } = await supabase.auth.getUser();
       const created = assertOk(
         await supabase
@@ -480,8 +529,13 @@ export function useCreateFollowUp() {
           .select()
           .single(),
       ) as FollowUp;
-      await supabase.from("leads").update({ next_follow_up_at: input.due_at }).eq("id", input.lead_id);
-      await logEvent(input.lead_id, "follow_up_created", "Follow-up criado", { due_at: input.due_at });
+      await supabase
+        .from("leads")
+        .update({ next_follow_up_at: input.due_at })
+        .eq("id", input.lead_id);
+      await logEvent(input.lead_id, "follow_up_created", "Follow-up criado", {
+        due_at: input.due_at,
+      });
       return created;
     },
     onSuccess: (followUp) => {
@@ -538,7 +592,9 @@ export type InterventionWithRelations = Intervention & {
   clinic: Pick<Clinic, "id" | "name"> | null;
 };
 
-export function useInterventions(filters: { status?: string; clinicId?: string; reason?: string } = {}) {
+export function useInterventions(
+  filters: { status?: string; clinicId?: string; reason?: string } = {},
+) {
   return useQuery({
     queryKey: ["interventions", filters],
     queryFn: async () => {
@@ -547,9 +603,12 @@ export function useInterventions(filters: { status?: string; clinicId?: string; 
         .select("*, lead:leads(id, name, phone, status), clinic:clinics(id, name)")
         .order("created_at", { ascending: false })
         .limit(300);
-      if (filters.status && filters.status !== "todos") query = query.eq("status", filters.status as never);
-      if (filters.clinicId && filters.clinicId !== "todos") query = query.eq("clinic_id", filters.clinicId);
-      if (filters.reason && filters.reason !== "todos") query = query.eq("reason", filters.reason as never);
+      if (filters.status && filters.status !== "todos")
+        query = query.eq("status", filters.status as never);
+      if (filters.clinicId && filters.clinicId !== "todos")
+        query = query.eq("clinic_id", filters.clinicId);
+      if (filters.reason && filters.reason !== "todos")
+        query = query.eq("reason", filters.reason as never);
       return assertOk(await query) as InterventionWithRelations[];
     },
   });
@@ -591,7 +650,8 @@ export function useRequestIntervention() {
       qc.invalidateQueries({ queryKey: ["lead-events", intervention.lead_id] });
       toast.success("Intervenção solicitada ao gestor.");
     },
-    onError: (error) => toast.error(friendlyError(error, "Não foi possível solicitar a intervenção.")),
+    onError: (error) =>
+      toast.error(friendlyError(error, "Não foi possível solicitar a intervenção.")),
   });
 }
 
@@ -623,8 +683,13 @@ export function useResolveIntervention() {
           .single(),
       ) as Intervention;
       if (closed) {
-        await supabase.from("leads").update({ intervention_pending: false }).eq("id", intervention.lead_id);
-        await logEvent(intervention.lead_id, "intervention_resolved", "Intervenção finalizada", { status });
+        await supabase
+          .from("leads")
+          .update({ intervention_pending: false })
+          .eq("id", intervention.lead_id);
+        await logEvent(intervention.lead_id, "intervention_resolved", "Intervenção finalizada", {
+          status,
+        });
       }
       return updated;
     },
@@ -635,7 +700,8 @@ export function useResolveIntervention() {
       qc.invalidateQueries({ queryKey: ["lead-events", intervention.lead_id] });
       toast.success("Intervenção atualizada.");
     },
-    onError: (error) => toast.error(friendlyError(error, "Não foi possível atualizar a intervenção.")),
+    onError: (error) =>
+      toast.error(friendlyError(error, "Não foi possível atualizar a intervenção.")),
   });
 }
 
@@ -675,6 +741,7 @@ export function useSetRole() {
       qc.invalidateQueries({ queryKey: ["team"] });
       toast.success("Papel atualizado.");
     },
-    onError: (error) => toast.error(friendlyError(error, "Não foi possível alterar o papel do usuário.")),
+    onError: (error) =>
+      toast.error(friendlyError(error, "Não foi possível alterar o papel do usuário.")),
   });
 }

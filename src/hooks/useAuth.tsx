@@ -41,7 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadMeta = async (userId: string) => {
     const [{ data: profileData }, { data: roleData }] = await Promise.all([
-      supabase.from("profiles").select("id, full_name, email, phone, is_active").eq("id", userId).maybeSingle(),
+      supabase
+        .from("profiles")
+        .select("id, full_name, email, phone, is_active")
+        .eq("id", userId)
+        .maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle(),
     ]);
     // Usuário desativado pelo gestor perde o acesso imediatamente.
@@ -55,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile((profileData as Profile) ?? null);
     setRole((roleData?.role as AppRole) ?? null);
   };
-
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, nextSession) => {

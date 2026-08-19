@@ -44,7 +44,11 @@ export function StatCard({
           : "border-border";
 
   const valueClass =
-    tone === "danger" ? "text-destructive" : tone === "warning" ? "text-warning" : "text-foreground";
+    tone === "danger"
+      ? "text-destructive"
+      : tone === "warning"
+        ? "text-warning"
+        : "text-foreground";
 
   const Comp = onClick ? "button" : "div";
   return (
@@ -56,7 +60,9 @@ export function StatCard({
         onClick && "hover:border-primary/60 hover:bg-accent/40",
       )}
     >
-      <p className="truncate text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="truncate text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
       <p className={cn("mt-1 text-2xl font-bold tabular", valueClass)}>{value}</p>
       {hint ? <p className="mt-0.5 truncate text-xs text-muted-foreground">{hint}</p> : null}
     </Comp>
@@ -81,7 +87,9 @@ export function SectionCard({
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3">
         <div className="min-w-0">
           <h2 className="truncate text-sm font-semibold">{title}</h2>
-          {description ? <p className="truncate text-xs text-muted-foreground">{description}</p> : null}
+          {description ? (
+            <p className="truncate text-xs text-muted-foreground">{description}</p>
+          ) : null}
         </div>
         {actions ? <div className="shrink-0">{actions}</div> : null}
       </div>

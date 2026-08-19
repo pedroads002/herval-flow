@@ -26,11 +26,16 @@ export const DEMAND_PRIORITY_TONE: Record<DemandPriority, string> = {
   baixa: "border-border bg-muted text-muted-foreground",
 };
 
-export const DEMAND_STATUS_ORDER: DemandStatus[] = ["a_fazer", "em_andamento", "concluida", "bloqueada"];
+export const DEMAND_STATUS_ORDER: DemandStatus[] = [
+  "a_fazer",
+  "em_andamento",
+  "concluida",
+  "bloqueada",
+];
 
 export const DEMAND_STATUS_LABEL: Record<DemandStatus, string> = {
   a_fazer: "A fazer",
-  em_andamento: "Em andamento",
+  em_andamento: "Fazendo",
   concluida: "Concluída",
   bloqueada: "Bloqueada",
 };
@@ -38,7 +43,7 @@ export const DEMAND_STATUS_LABEL: Record<DemandStatus, string> = {
 export const DEMAND_STATUS_TONE: Record<DemandStatus, string> = {
   a_fazer: "border-border bg-muted text-foreground",
   em_andamento: "border-info/40 bg-info/10 text-info",
-  concluida: "border-success/40 bg-success/15 text-success",
+  concluida: "border-border/60 bg-muted/60 text-muted-foreground",
   bloqueada: "border-destructive/40 bg-destructive/10 text-destructive",
 };
 
@@ -74,10 +79,14 @@ export function isDueToday(demand: { due_at: string | null }) {
 const PRIORITY_WEIGHT: Record<DemandPriority, number> = { urgente: 0, alta: 1, media: 2, baixa: 3 };
 
 /** Ordena por urgência operacional: atrasadas → prioridade → prazo mais próximo. */
-export function operationalSort<T extends { due_at: string | null; status: DemandStatus; priority: DemandPriority; created_at: string }>(
-  a: T,
-  b: T,
-) {
+export function operationalSort<
+  T extends {
+    due_at: string | null;
+    status: DemandStatus;
+    priority: DemandPriority;
+    created_at: string;
+  },
+>(a: T, b: T) {
   const overdueDiff = Number(isOverdue(b)) - Number(isOverdue(a));
   if (overdueDiff !== 0) return overdueDiff;
   const weight = PRIORITY_WEIGHT[a.priority] - PRIORITY_WEIGHT[b.priority];

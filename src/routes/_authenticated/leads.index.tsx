@@ -8,7 +8,13 @@ import { LEAD_STATUS_LABEL, LEAD_STATUS_ORDER, LEAD_STATUS_TONE } from "@/lib/do
 import { formatPhone, relativeDay } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { NewLeadDialog } from "@/components/OperationDialogs";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -16,7 +22,10 @@ export const Route = createFileRoute("/_authenticated/leads/")({
   head: () => ({
     meta: [
       { title: "Leads — Herval Flow" },
-      { name: "description", content: "Base completa de leads da operação comercial com filtros e busca." },
+      {
+        name: "description",
+        content: "Base completa de leads da operação comercial com filtros e busca.",
+      },
     ],
   }),
   component: LeadsPage,
@@ -74,7 +83,10 @@ function LeadsPage() {
             ))}
           </SelectContent>
         </Select>
-        <Select value={status} onValueChange={(value) => setStatus(value as NonNullable<LeadFilters["status"]>)}>
+        <Select
+          value={status}
+          onValueChange={(value) => setStatus(value as NonNullable<LeadFilters["status"]>)}
+        >
           <SelectTrigger aria-label="Filtrar por status">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -144,8 +156,13 @@ function LeadsPage() {
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1">
-                  <StatusBadge label={LEAD_STATUS_LABEL[lead.status]} tone={LEAD_STATUS_TONE[lead.status]} />
-                  <span className="text-[11px] text-muted-foreground">{relativeDay(lead.created_at)}</span>
+                  <StatusBadge
+                    label={LEAD_STATUS_LABEL[lead.status]}
+                    tone={LEAD_STATUS_TONE[lead.status]}
+                  />
+                  <span className="text-[11px] text-muted-foreground">
+                    {relativeDay(lead.created_at)}
+                  </span>
                 </div>
               </Link>
             </li>

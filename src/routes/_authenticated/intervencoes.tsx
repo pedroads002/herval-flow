@@ -9,7 +9,13 @@ import { formatDateTime, relativeDay } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/intervencoes")({
   head: () => ({
@@ -46,7 +52,11 @@ function InterventionsPage() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <StatCard label="Nesta visão" value={rows.length} />
-        <StatCard label="Abertas" value={rows.filter((r) => r.status === "pendente").length} tone="danger" />
+        <StatCard
+          label="Abertas"
+          value={rows.filter((r) => r.status === "pendente").length}
+          tone="danger"
+        />
         <StatCard
           label="Em andamento"
           value={rows.filter((r) => r.status === "em_andamento").length}
@@ -109,7 +119,10 @@ function InterventionsPage() {
       ) : (
         <ul className="space-y-2">
           {rows.map((item) => (
-            <li key={item.id} className="rounded-lg border border-border bg-card px-4 py-3 shadow-panel">
+            <li
+              key={item.id}
+              className="rounded-lg border border-border bg-card px-4 py-3 shadow-panel"
+            >
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                 <div className="min-w-0">
                   <Link
@@ -143,7 +156,9 @@ function InterventionsPage() {
                           : "border-border text-muted-foreground"
                     }
                   />
-                  <span className="text-[11px] text-muted-foreground">{relativeDay(item.created_at)}</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {relativeDay(item.created_at)}
+                  </span>
                 </div>
               </div>
 
