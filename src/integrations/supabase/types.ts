@@ -84,6 +84,39 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          description: string | null
+          entity_id: string | null
+          entity_type: string
+          event_type: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type: string
+          event_type: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: []
+      }
       clinics: {
         Row: {
           created_at: string
@@ -131,6 +164,59 @@ export type Database = {
           whatsapp?: string | null
         }
         Relationships: []
+      }
+      deletion_requests: {
+        Row: {
+          created_at: string
+          demand_id: string | null
+          entity_id: string
+          entity_label: string | null
+          entity_type: string
+          id: string
+          reason: string | null
+          requested_by: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          demand_id?: string | null
+          entity_id: string
+          entity_label?: string | null
+          entity_type?: string
+          id?: string
+          reason?: string | null
+          requested_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          demand_id?: string | null
+          entity_id?: string
+          entity_label?: string | null
+          entity_type?: string
+          id?: string
+          reason?: string | null
+          requested_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deletion_requests_demand_id_fkey"
+            columns: ["demand_id"]
+            isOneToOne: false
+            referencedRelation: "demands"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       demand_comments: {
         Row: {
@@ -548,6 +634,53 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          created_by: string | null
+          demand_id: string | null
+          id: string
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+          viewed_at: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          demand_id?: string | null
+          id?: string
+          read_at?: string | null
+          title: string
+          type?: string
+          user_id: string
+          viewed_at?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          demand_id?: string | null
+          id?: string
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_demand_id_fkey"
+            columns: ["demand_id"]
+            isOneToOne: false
+            referencedRelation: "demands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -637,6 +770,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_view_demand: { Args: { _demand_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -644,6 +778,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_active_user: { Args: never; Returns: boolean }
       is_gestor: { Args: never; Returns: boolean }
     }
     Enums: {
