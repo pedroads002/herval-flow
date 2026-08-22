@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { friendlyError } from "@/lib/api";
 import type { DemandPriority, DemandStatus } from "@/lib/demands";
+import { sendDemandWhatsAppNotification } from "@/lib/evolution.functions";
 
 export type Tag = Database["public"]["Tables"]["tags"]["Row"];
 export type Demand = Database["public"]["Tables"]["demands"]["Row"];
@@ -188,6 +189,31 @@ export function useSaveDemand() {
         ) as Demand;
       }
       await syncTags(demand.id, input.tagIds);
+
+      // WhatsApp: somente novas demandas com responsável definido.
+      // Falha no WhatsApp não impede a criação da demanda.
+      if (!input.id && input.assigned_to) {
+        try {
+          await sendDemandWhatsAppNotification({
+            data: {
+              assignedTo: input.assigned_to,
+              title: demand.title,
+              description: demand.description,
+              priority: demand.priority,
+              dueAt: demand.due_at,
+            },
+          });
+        } catch (error) {
+          console.error(
+            "[Herval Flow] Não foi possível enviar a notificação da demanda pelo WhatsApp:",
+            error,
+          );
+          toast.warning(
+            "Demanda criada, mas não foi possível enviar a notificação pelo WhatsApp.",
+          );
+        }
+      }
+
       return demand;
     },
     onSuccess: (_d, vars) => {
