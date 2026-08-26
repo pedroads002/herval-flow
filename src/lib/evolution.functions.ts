@@ -103,6 +103,7 @@ export const sendDemandWhatsAppNotification = createServerFn({
       ? new Date(data.dueAt).toLocaleString("pt-BR", {
           dateStyle: "short",
           timeStyle: "short",
+          timeZone: "America/Sao_Paulo",
         })
       : "Sem prazo definido";
 

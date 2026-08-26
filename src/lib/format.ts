@@ -1,13 +1,21 @@
-export const dateFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" });
+export const dateFmt = new Intl.DateTimeFormat("pt-BR", {
+  dateStyle: "short",
+  timeZone: "America/Sao_Paulo",
+});
 export const dateTimeFmt = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
   timeStyle: "short",
+  timeZone: "America/Sao_Paulo",
 });
-export const timeFmt = new Intl.DateTimeFormat("pt-BR", { timeStyle: "short" });
+export const timeFmt = new Intl.DateTimeFormat("pt-BR", {
+  timeStyle: "short",
+  timeZone: "America/Sao_Paulo",
+});
 export const longDateFmt = new Intl.DateTimeFormat("pt-BR", {
   weekday: "long",
   day: "2-digit",
   month: "long",
+  timeZone: "America/Sao_Paulo",
 });
 
 export function formatDate(value?: string | null) {
