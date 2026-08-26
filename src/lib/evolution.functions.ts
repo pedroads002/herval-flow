@@ -55,13 +55,14 @@ export const sendDemandWhatsAppNotification = createServerFn({
 })
   .middleware([requireSupabaseAuth])
   .validator(sendDemandWhatsAppSchema)
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
     const { url, key } = getEvolutionConfig();
 
-    // Usa o client autenticado do próprio usuário (via requireSupabaseAuth),
-    // que já respeita a RLS de "profiles" (SELECT liberado para autenticados).
-    // Evita depender da SUPABASE_SERVICE_ROLE_KEY apenas para essa leitura.
-    const { data: profile, error: profileError } = await context.supabase
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("full_name, phone")
       .eq("id", data.assignedTo)
