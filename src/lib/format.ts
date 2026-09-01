@@ -37,8 +37,9 @@ export function formatNumber(value: number) {
   return new Intl.NumberFormat("pt-BR").format(value);
 }
 
+/** Recebe uma fração (0 a 1) e formata como percentual (ex.: 0.696 -> "69,6%"). */
 export function formatPercent(value: number) {
-  return `${new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(value)}%`;
+  return `${new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(value * 100)}%`;
 }
 
 export function relativeDay(value?: string | null) {
